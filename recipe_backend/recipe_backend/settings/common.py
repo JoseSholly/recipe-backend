@@ -155,7 +155,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),   # How long an access token is valid
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=2),   # How long an access token is valid
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),     # How long a refresh token is valid
     'ROTATE_REFRESH_TOKENS': True,                  # Whether to issue a new refresh token during refresh
     'BLACKLIST_AFTER_ROTATION': True,               # Whether to blacklist old refresh tokens

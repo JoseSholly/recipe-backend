@@ -5,7 +5,7 @@ from .models import Recipe,Ingredient
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from .serializers import RecipeCreateSerializer, RecipeDetailSerializer
+from .serializers import RecipeCreateSerializer, RecipeDetailSerializer, RecipeListSerializer, UserSerializer
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -15,6 +15,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
             return RecipeCreateSerializer
+        elif self.action in ['list']:
+            return RecipeListSerializer
         return RecipeDetailSerializer
     
     def get_queryset(self):
@@ -28,6 +30,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(course__icontains=course)
             
         return queryset
+    def list(self, request, *args, **kwargs):
+
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        user_serializer = UserSerializer(request.user)
+        
+        # return Response(serializer.data)
+
+        response = {
+            "status": "success",
+            "message": "Recipes retrieved successfully",
+            "user_info": user_serializer.data,
+            "recipes": serializer.data,
+        }
+        return Response(response, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
         try:
