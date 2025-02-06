@@ -61,14 +61,6 @@ class SignUpView(views.APIView):
     @swagger_auto_schema(request_body=UserRegistrationSerializer)
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
-        email = request.data.get('email')
-        password = request.data.get('password')
-
-        if not email or not password:
-            return Response({"error": "email and password are required"}, status=status.HTTP_400_BAD_REQUEST)
-
-        if User.objects.filter(email=email).exists():
-            return Response({"error": "User email already exists"}, status=status.HTTP_400_BAD_REQUEST)
         
         if serializer.is_valid():
             user = serializer.save()
@@ -78,7 +70,15 @@ class SignUpView(views.APIView):
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(
+            {
+                "status": "error",
+                "message": "Validation failed",
+                "errors": serializer.errors,
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
         
 
 class LogoutView(views.APIView):

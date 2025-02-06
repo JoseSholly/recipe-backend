@@ -55,3 +55,18 @@ class LifestylePreferences(models.TextChoices):
 
 def validate_lifestyle_preferences(value):
     validate_choices(value, [choice.value for choice in LifestylePreferences])
+
+
+def validate_email_address(value):
+    if "@" not in value or "." not in value.split("@")[1]:
+        raise ValidationError(_("Invalid email address"))
+    elif " " in value:
+        raise ValidationError(_("Email address cannot contain spaces"))
+
+    local_part, domain_part = value.split("@")
+    domain_name = domain_part.split(".")[0]
+
+    if "gmail" not in domain_name and "email" not in domain_name:
+        raise ValidationError(
+            _("Email address must contain 'gmail' or 'email' in the domain part")
+        )

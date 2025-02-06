@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from .utils import validate_email_address
 
 
 User = get_user_model()
@@ -21,13 +22,20 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             'email', 'password'
         ]
         
+    def validate_email(self, value):
+        """
+        Check if email address is valid.
+        """
+        validate_email_address(value)
+        return value
+
     def validate(self, data):
         """
         Check if email address is valid, and if user exists
         """
         
-        if not data['email'].find('@') or not data['email'].find('.') or not data['email'].endswith('com') or not data['email'].endswith('gmail') or not data['email'].endswith('email'):
-            raise serializers.ValidationError({"error": "Invalid email address"})
+        if not data['email'].find('@') or not data['email'].find('.') or not data['email'].endswith('com'):
+            raise serializers.ValidationError({"error": "Invalid email address. from serializers"})
         return data
     
     def create(self, validated_data):

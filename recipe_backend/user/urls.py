@@ -10,7 +10,7 @@ urlpatterns = [
     # path('user/login/', LoginView.as_view(), name='login'),
     # path('user/logout/', LogoutView.as_view(), name='logout'),
 
-    path('user/login/', TokenObtainPairView.as_view(), name='login'),
+    path('user/login/', SignUpView.as_view(), name='login'),
     path('user/logout/', LogoutView.as_view(), name='logout'),
     path('user/signup/', SignUpView.as_view(), name= 'signup')
 ]
