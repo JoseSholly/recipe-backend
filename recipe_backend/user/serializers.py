@@ -26,7 +26,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         Check if email address is valid, and if user exists
         """
         
-        if not data['email'].find('@') or not data['email'].find('.') or not data['email'].endswith('com'):
+        if not data['email'].find('@') or not data['email'].find('.') or not data['email'].endswith('com') or not data['email'].endswith('gmail') or not data['email'].endswith('email'):
             raise serializers.ValidationError({"error": "Invalid email address"})
         return data
     
