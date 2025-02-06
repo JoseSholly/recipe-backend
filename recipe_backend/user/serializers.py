@@ -1,5 +1,8 @@
 from rest_framework import serializers
-from .models import User
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """
@@ -8,40 +11,30 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         write_only=True, 
         required=True, 
-        style={'input_type': 'password'}
+        style={'input_type': 'password',},
+        min_length=8,
+        max_length=70
     )
-    password_confirm = serializers.CharField(
-        write_only=True, 
-        required=True, 
-        style={'input_type': 'password'}
-    )
-    
     class Meta:
         model = User
         fields = [
-            'id', 'username', 'email', 'password', 
-            'password_confirm', 'first_name', 'last_name'
+            'email', 'password'
         ]
-        extra_kwargs = {
-            'email': {'required': True},
-            'username': {'required': True}
-        }
-    
+        
     def validate(self, data):
         """
-        Check that the two password entries match
+        Check if email address is valid, and if user exists
         """
-        if data['password'] != data['password_confirm']:
-            raise serializers.ValidationError({"password_confirm": "Passwords do not match."})
+        
+        if not data['email'].find('@') or not data['email'].find('.') or not data['email'].endswith('com'):
+            raise serializers.ValidationError({"error": "Invalid email address"})
         return data
     
     def create(self, validated_data):
         """
         Create and return a new user instance
         """
-        validated_data.pop('password_confirm')
         user = User.objects.create_user(
-            username=validated_data['username'],
             email=validated_data['email'],
             password=validated_data['password']
         )

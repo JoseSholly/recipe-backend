@@ -34,11 +34,11 @@ from rest_framework_simplejwt.views import (
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Recipe API",
+        title="Nuwell AI API",
         default_version="v1",
-        description="This API provides endpoints for managing recipes, ingredients, and related operations.",
-        terms_of_service="https://www.example.com/terms/",
-        contact=openapi.Contact(email="contact@example.com"),
+        description="Test description",
+        terms_of_service="https://www.google.com/policies/terms/",
+        contact=openapi.Contact(email="contact@snippets.local"),
         license=openapi.License(name="BSD License"),
     ),
     public=True,
@@ -53,8 +53,6 @@ urlpatterns = [
     
 
     # Documentation Urls
-    path("api-schema/", get_restframe_work_schema(title="API Schema", description="Guide for the Inverter Power REST API"), name="api_schema"),
-    path('api/v1/docs/swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('api/v1/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('api/v1/redocs/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),

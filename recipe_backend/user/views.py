@@ -1,12 +1,12 @@
-from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, views
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate
-
+from .serializers import UserRegistrationSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
+from drf_yasg.utils import swagger_auto_schema
 
 User = get_user_model()
 """
@@ -54,10 +54,13 @@ class LogoutView(APIView):
         request.user.auth_token.delete()
         return Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)"""
 
-class SignUpView(APIView):
+class SignUpView(views.APIView):
     permission_classes = [AllowAny]
+    serializer_class = UserRegistrationSerializer
 
+    @swagger_auto_schema(request_body=UserRegistrationSerializer)
     def post(self, request):
+        serializer = self.serializer_class(data=request.data)
         email = request.data.get('email')
         password = request.data.get('password')
 
@@ -65,17 +68,20 @@ class SignUpView(APIView):
             return Response({"error": "email and password are required"}, status=status.HTTP_400_BAD_REQUEST)
 
         if User.objects.filter(email=email).exists():
-            return Response({"error": "email already exists"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "User email already exists"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if serializer.is_valid():
+            user = serializer.save()
+            refresh = RefreshToken.for_user(user)
 
-        user = User.objects.create_user(email=email, password=password)
-        refresh = RefreshToken.for_user(user)
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
 
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }, status=status.HTTP_201_CREATED)
-
-class LogoutView(APIView):
+class LogoutView(views.APIView):
     permission_classes = [IsAuthenticated] 
     def post(self, request):
         refresh_token = request.data.get('refresh')
