@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 from .serializers import UserRegistrationSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from drf_yasg.utils import swagger_auto_schema
-from .serializers import CustomTokenObtainPairSerializer
+from .serializers import CustomTokenObtainPairSerializer, LogOutSerializer
 
 User = get_user_model()
 class SignUpView(views.APIView):
@@ -55,11 +55,13 @@ class LoginView(views.APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         data = serializer.validated_data
-        print(data)
+
         return Response(data, status=status.HTTP_200_OK)       
 
 class LogoutView(views.APIView):
     permission_classes = [IsAuthenticated] 
+    serializer_class = LogOutSerializer
+    @swagger_auto_schema(request_body=LogOutSerializer)
     def post(self, request):
         refresh_token = request.data.get('refresh')
         try:

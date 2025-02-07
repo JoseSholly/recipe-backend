@@ -65,6 +65,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
-        data.update({"email": self.user.email})
+        # data.update({"email": self.user.email})
         # Add any additional custom data here
         return data
+
+class LogOutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+    
+    
